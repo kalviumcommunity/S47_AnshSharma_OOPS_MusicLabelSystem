@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.29"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "S47_AnshSharma_OOPS_MusicLabelSystem",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "S47_AnshSharma_OOPS_MusicLabelSystem::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-S47_AnshSharma_OOPS_MusicLabelSystem-Debug-0775d8533eb2c40f6a97.json",
+					"name" : "S47_AnshSharma_OOPS_MusicLabelSystem",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/kalvium/oops/S47_AnshSharma_OOPS_MusicLabelSystem/cmake-build-debug",
+		"source" : "D:/kalvium/oops/S47_AnshSharma_OOPS_MusicLabelSystem"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

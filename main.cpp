@@ -4,47 +4,132 @@
 #include <vector>
 using namespace std;
 
-class Album {
-private:
-  string title;
-  string releaseDate;
-  vector<std::string> trackList;
-  double sales;
-  string status;
-
-public:
-  Album(string title, string releaseDate) {
-    title = title;
-    releaseDate = releaseDate;
-    sales = 0.0;
-    status = "In Production";
-  }
-
-  void addTrack(string track) { trackList.push_back(track); }
-
-  void removeTrack(string track) {
-      trackList.erase(remove(trackList.begin(),trackList.end(), track), trackList.end();
-  }
-
-  void updateSales(double amount) { sales += amount; }
-
-  void changeStatus(string newStatus) { status = newStatus; }
-
-  double getSales() { return sales; }
-
-  string getStatus() { return status; }
+// Forward declaration of the Contract class
+class Contract {
+    // Dummy Contract class for demonstration purposes
 };
 
+// Album class definition
+class Album {
+private:
+    string title;
+    string releaseDate;
+    vector<string> trackList;
+    double sales;
+    string status;
+
+public:
+    // Constructor
+    Album(string albumTitle, string albumReleaseDate) {
+        this->title = albumTitle;
+        this->releaseDate = albumReleaseDate;
+        this->sales = 0.0;
+        this->status = "In Production";
+    }
+
+    // Method to add a track to the album
+    void addTrack(string track) {
+        this->trackList.push_back(track);
+    }
+
+    // Method to remove a track from the album
+    void removeTrack(string track) {
+        this->trackList.erase(remove(this->trackList.begin(), this->trackList.end(), track), this->trackList.end());
+    }
+
+    // Method to update the sales of the album
+    void updateSales(double amount) {
+        this->sales += amount;
+    }
+
+    // Method to change the status of the album
+    void changeStatus(string newStatus) {
+        this->status = newStatus;
+    }
+
+    // Method to get the total sales of the album
+    double getSales() const {
+        return this->sales;
+    }
+
+    // Method to get the current status of the album
+    string getStatus() const {
+        return this->status;
+    }
+};
+
+// Artist class definition
+class Artist {
+protected:
+    string name;
+    string genre;
+    Contract contractDetails;
+    double royaltyRate;
+    vector<Album*> albumList;
+
+public:
+    // Constructor
+    Artist(string artistName, string artistGenre, Contract contract, double rate) {
+        this->name = artistName;
+        this->genre = artistGenre;
+        this->contractDetails = contract;
+        this->royaltyRate = rate;
+    }
+
+
+
+    // Method to sign a new contract
+    void signContract(Contract newContract) {
+        this->contractDetails = newContract;
+    }
+
+    // Method to release a new album
+    void releaseAlbum(Album* album) {
+        this->albumList.push_back(album);
+    }
+
+    // Method to calculate royalties
+    double calculateRoyalties() const {
+        double totalRoyalties = 0.0;
+        for (const Album* album : this->albumList) {
+            totalRoyalties += album->getSales() * this->royaltyRate;
+        }
+        return totalRoyalties;
+    }
+
+    // Getter for the artist's name
+    string getName() const {
+        return this->name;
+    }
+
+    // Getter for the artist's genre
+    string getGenre() const {
+        return this->genre;
+    }
+};
+
+// Main function
 int main() {
-  Album album("My First Album", "2024-09-01");
-  album.addTrack("Track 1");
-  album.addTrack("Track 2");
-  album.updateSales(1000);
-  album.changeStatus("Released");
+    // Dummy Contract object for demonstration purposes
+    Contract contract;
 
-  cout << "Album: " << album.getStatus()
-            << " with Sales: " << album.getSales() << std::endl;
+    // Create a dummy artist
+    Artist artist("John Doe", "Rock", contract, 0.1);  // 10% royalty rate
 
-  return 0;
+    // Create an album and associate it with the artist
+    Album album("Rocking the World", "2024-09-01");
+    album.addTrack("Track 1");
+    album.addTrack("Track 2");
+    album.updateSales(5000);  // $5000 sales
+    album.updateSales(3000);  // Additional $3000 sales
+    album.changeStatus("Released");
+
+    // Release the album through the artist
+    artist.releaseAlbum(&album);
+
+    // Print out the artist details and royalties
+    cout << "Artist: " << artist.getName() << endl;
+    cout << "Genre: " << artist.getGenre() << endl;
+    cout << "Total Royalties: $" << artist.calculateRoyalties() << endl;
+    return 0;
 }
-
