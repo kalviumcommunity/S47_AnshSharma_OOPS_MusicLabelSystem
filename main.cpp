@@ -4,12 +4,12 @@
 #include <vector>
 using namespace std;
 
-// Forward declaration of the Contract class
+
 class Contract {
     // Dummy Contract class for demonstration purposes
 };
 
-// Album class definition
+
 class Album {
 private:
     string title;
@@ -27,38 +27,31 @@ public:
         this->status = "In Production";
     }
 
-    // Method to add a track to the album
     void addTrack(string track) {
         this->trackList.push_back(track);
     }
 
-    // Method to remove a track from the album
     void removeTrack(string track) {
         this->trackList.erase(remove(this->trackList.begin(), this->trackList.end(), track), this->trackList.end());
     }
 
-    // Method to update the sales of the album
     void updateSales(double amount) {
         this->sales += amount;
     }
 
-    // Method to change the status of the album
     void changeStatus(string newStatus) {
         this->status = newStatus;
     }
 
-    // Method to get the total sales of the album
     double getSales() const {
         return this->sales;
     }
 
-    // Method to get the current status of the album
     string getStatus() const {
         return this->status;
     }
 };
 
-// Artist class definition
 class Artist {
 protected:
     string name;
@@ -68,7 +61,6 @@ protected:
     vector<Album*> albumList;
 
 public:
-    // Constructor
     Artist(string artistName, string artistGenre, Contract contract, double rate) {
         this->name = artistName;
         this->genre = artistGenre;
@@ -78,17 +70,14 @@ public:
 
 
 
-    // Method to sign a new contract
     void signContract(Contract newContract) {
         this->contractDetails = newContract;
     }
 
-    // Method to release a new album
     void releaseAlbum(Album* album) {
         this->albumList.push_back(album);
     }
 
-    // Method to calculate royalties
     double calculateRoyalties() const {
         double totalRoyalties = 0.0;
         for (const Album* album : this->albumList) {
@@ -97,39 +86,62 @@ public:
         return totalRoyalties;
     }
 
-    // Getter for the artist's name
     string getName() const {
         return this->name;
     }
 
-    // Getter for the artist's genre
     string getGenre() const {
         return this->genre;
     }
 };
 
-// Main function
 int main() {
-    // Dummy Contract object for demonstration purposes
     Contract contract;
 
-    // Create a dummy artist
-    Artist artist("John Doe", "Rock", contract, 0.1);  // 10% royalty rate
+    Artist artists[2] = {
+        Artist("John Doe", "Rock", contract, 0.1),
+        Artist("Jane Smith", "Pop", contract, 0.15)
+    };
 
-    // Create an album and associate it with the artist
-    Album album("Rocking the World", "2024-09-01");
-    album.addTrack("Track 1");
-    album.addTrack("Track 2");
-    album.updateSales(5000);  // $5000 sales
-    album.updateSales(3000);  // Additional $3000 sales
-    album.changeStatus("Released");
+    Album johnAlbums[2] = {
+        Album("Rocking the World", "2024-09-01"),
+        Album("The Next Hit", "2024-12-01")
+    };
+    johnAlbums[0].addTrack("Track 1");
+    johnAlbums[0].addTrack("Track 2");
+    johnAlbums[0].updateSales(5000);
+    johnAlbums[0].changeStatus("Released");
 
-    // Release the album through the artist
-    artist.releaseAlbum(&album);
+    johnAlbums[1].addTrack("Track A");
+    johnAlbums[1].addTrack("Track B");
+    johnAlbums[1].updateSales(3000);
+    johnAlbums[1].changeStatus("Released");
 
-    // Print out the artist details and royalties
-    cout << "Artist: " << artist.getName() << endl;
-    cout << "Genre: " << artist.getGenre() << endl;
-    cout << "Total Royalties: $" << artist.calculateRoyalties() << endl;
+    Album janeAlbums[2] = {
+        Album("Pop Sensation", "2024-10-15"),
+        Album("Hits Forever", "2024-11-20")
+    };
+    janeAlbums[0].addTrack("Pop Track 1");
+    janeAlbums[0].addTrack("Pop Track 2");
+    janeAlbums[0].updateSales(8000);
+    janeAlbums[0].changeStatus("Released");
+
+    janeAlbums[1].addTrack("Hit Track A");
+    janeAlbums[1].addTrack("Hit Track B");
+    janeAlbums[1].updateSales(6000);
+    janeAlbums[1].changeStatus("Released");
+
+    for (int i = 0; i < 2; ++i) {
+        artists[0].releaseAlbum(&johnAlbums[i]);
+        artists[1].releaseAlbum(&janeAlbums[i]);
+    }
+
+    for (int i = 0; i < 2; ++i) {
+        cout << "Artist: " << artists[i].getName() << endl;
+        cout << "Genre: " << artists[i].getGenre() << endl;
+        cout << "Total Royalties: $" << artists[i].calculateRoyalties() << endl;
+        cout << "----------------------------" << endl;
+    }
+
     return 0;
 }
