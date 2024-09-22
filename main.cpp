@@ -96,16 +96,16 @@ public:
 };
 
 int main() {
-    Contract contract;
+    Contract* contract = new Contract();
 
-    Artist artists[2] = {
-        Artist("John Doe", "Rock", contract, 0.1),
-        Artist("Jane Smith", "Pop", contract, 0.15)
+    Artist* artists[2] = {
+        new Artist("John Doe", "Rock", contract, 0.1),
+        new Artist("Jane Smith", "Pop", contract, 0.15)
     };
 
-    Album johnAlbums[2] = {
-        Album("Rocking the World", "2024-09-01"),
-        Album("The Next Hit", "2024-12-01")
+    Album* johnAlbums[2] = {
+        new Album("Rocking the World", "2024-09-01"),
+        new Album("The Next Hit", "2024-12-01")
     };
     johnAlbums[0].addTrack("Track 1");
     johnAlbums[0].addTrack("Track 2");
@@ -117,9 +117,9 @@ int main() {
     johnAlbums[1].updateSales(3000);
     johnAlbums[1].changeStatus("Released");
 
-    Album janeAlbums[2] = {
-        Album("Pop Sensation", "2024-10-15"),
-        Album("Hits Forever", "2024-11-20")
+    Album* janeAlbums[2] = {
+        new Album("Pop Sensation", "2024-10-15"),
+        new Album("Hits Forever", "2024-11-20")
     };
     janeAlbums[0].addTrack("Pop Track 1");
     janeAlbums[0].addTrack("Pop Track 2");
@@ -141,6 +141,16 @@ int main() {
         cout << "Genre: " << artists[i].getGenre() << endl;
         cout << "Total Royalties: $" << artists[i].calculateRoyalties() << endl;
         cout << "----------------------------" << endl;
+    }
+
+    //cleanup dynamic memory
+    for(int i =0 ; i <2; ++i){
+      delete artists[i];
+    }
+
+    for(int i =0; i<2; ++i){
+      delete johnAlbums[i];
+      delete janeAlbums[i];
     }
 
     return 0;
