@@ -4,11 +4,9 @@
 #include <vector>
 using namespace std;
 
-
 class Contract {
     // Dummy Contract class for demonstration purposes
 };
-
 
 class Album {
 private:
@@ -18,6 +16,8 @@ private:
     double sales;
     string status;
 
+    static int totalAlbumsReleased;
+
 public:
     // Constructor
     Album(string albumTitle, string albumReleaseDate) {
@@ -25,6 +25,11 @@ public:
         this->releaseDate = albumReleaseDate;
         this->sales = 0.0;
         this->status = "In Production";
+        totalAlbumsReleased++;
+    }
+
+    ~Album(){
+        totalAlbumsReleased--;
     }
 
     void addTrack(string track) {
@@ -50,7 +55,14 @@ public:
     string getStatus() const {
         return this->status;
     }
+  
+    static int getTotalAlbumsReleased(){
+        return totalAlbumsReleased;
+    }
+
 };
+
+int Album::totalAlbumsReleased = 0;
 
 class Artist {
 protected:
@@ -59,6 +71,8 @@ protected:
     Contract contractDetails;
     double royaltyRate;
     vector<Album*> albumList;
+  
+    static double totalRoyaltiesAccumulated;
 
 public:
     Artist(string artistName, string artistGenre, Contract contract, double rate) {
@@ -67,8 +81,6 @@ public:
         this->contractDetails = contract;
         this->royaltyRate = rate;
     }
-
-
 
     void signContract(Contract newContract) {
         this->contractDetails = newContract;
@@ -86,6 +98,11 @@ public:
         return totalRoyalties;
     }
 
+    void accumulateRoyalties(){
+        double artistRoyalties = calculateRoyalties();
+        totalRoyaltiesAccumulated += artistRoyalties;
+    }
+
     string getName() const {
         return this->name;
     }
@@ -93,65 +110,74 @@ public:
     string getGenre() const {
         return this->genre;
     }
+
+    static double getTotalRoyaltiesAccumulated(){
+        return totalRoyaltiesAccumulated;
+    }
 };
+
+double Artist::totalRoyaltiesAccumulated = 0.0;
 
 int main() {
     Contract* contract = new Contract();
 
     Artist* artists[2] = {
-        new Artist("John Doe", "Rock", contract, 0.1),
-        new Artist("Jane Smith", "Pop", contract, 0.15)
+        new Artist("John Doe", "Rock", *contract, 0.1),
+        new Artist("Jane Smith", "Pop", *contract, 0.15)
     };
 
     Album* johnAlbums[2] = {
         new Album("Rocking the World", "2024-09-01"),
         new Album("The Next Hit", "2024-12-01")
     };
-    johnAlbums[0].addTrack("Track 1");
-    johnAlbums[0].addTrack("Track 2");
-    johnAlbums[0].updateSales(5000);
-    johnAlbums[0].changeStatus("Released");
+    johnAlbums[0]->addTrack("Track 1");
+    johnAlbums[0]->addTrack("Track 2");
+    johnAlbums[0]->updateSales(5000);
+    johnAlbums[0]->changeStatus("Released");
 
-    johnAlbums[1].addTrack("Track A");
-    johnAlbums[1].addTrack("Track B");
-    johnAlbums[1].updateSales(3000);
-    johnAlbums[1].changeStatus("Released");
+    johnAlbums[1]->addTrack("Track A");
+    johnAlbums[1]->addTrack("Track B");
+    johnAlbums[1]->updateSales(3000);
+    johnAlbums[1]->changeStatus("Released");
 
     Album* janeAlbums[2] = {
         new Album("Pop Sensation", "2024-10-15"),
         new Album("Hits Forever", "2024-11-20")
     };
-    janeAlbums[0].addTrack("Pop Track 1");
-    janeAlbums[0].addTrack("Pop Track 2");
-    janeAlbums[0].updateSales(8000);
-    janeAlbums[0].changeStatus("Released");
+    janeAlbums[0]->addTrack("Pop Track 1");
+    janeAlbums[0]->addTrack("Pop Track 2");
+    janeAlbums[0]->updateSales(8000);
+    janeAlbums[0]->changeStatus("Released");
 
-    janeAlbums[1].addTrack("Hit Track A");
-    janeAlbums[1].addTrack("Hit Track B");
-    janeAlbums[1].updateSales(6000);
-    janeAlbums[1].changeStatus("Released");
+    janeAlbums[1]->addTrack("Hit Track A");
+    janeAlbums[1]->addTrack("Hit Track B");
+    janeAlbums[1]->updateSales(6000);
+    janeAlbums[1]->changeStatus("Released");
 
     for (int i = 0; i < 2; ++i) {
-        artists[0].releaseAlbum(&johnAlbums[i]);
-        artists[1].releaseAlbum(&janeAlbums[i]);
+        artists[0]->releaseAlbum(johnAlbums[i]);
+        artists[1]->releaseAlbum(janeAlbums[i]);
     }
 
     for (int i = 0; i < 2; ++i) {
-        cout << "Artist: " << artists[i].getName() << endl;
-        cout << "Genre: " << artists[i].getGenre() << endl;
-        cout << "Total Royalties: $" << artists[i].calculateRoyalties() << endl;
+        artists[i]->accumulateRoyalties();
+        cout << "Artist: " << artists[i]->getName() << endl;
+        cout << "Genre: " << artists[i]->getGenre() << endl;
+        cout << "Total Royalties: $" << artists[i]->calculateRoyalties() << endl;
         cout << "----------------------------" << endl;
     }
 
-    //cleanup dynamic memory
-    for(int i =0 ; i <2; ++i){
-      delete artists[i];
+    cout << "Total Albums Released: " << Album::getTotalAlbumsReleased() << endl;
+    cout << "Total Royalties Accumulated by All Artists: $" << Artist::getTotalRoyaltiesAccumulated() << endl;
+
+    // Cleanup dynamic memory
+    for (int i = 0; i < 2; ++i) {
+        delete artists[i];
+        delete johnAlbums[i];
+        delete janeAlbums[i];
     }
 
-    for(int i =0; i<2; ++i){
-      delete johnAlbums[i];
-      delete janeAlbums[i];
-    }
+    delete contract;
 
     return 0;
 }
