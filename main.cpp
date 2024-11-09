@@ -82,6 +82,8 @@ public:
         this->royaltyRate = rate;
     }
 
+    ~Artist(){} //destructor
+
     void signContract(Contract newContract) {
         this->contractDetails = newContract;
     }
