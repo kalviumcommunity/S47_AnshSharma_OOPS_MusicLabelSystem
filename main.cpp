@@ -21,10 +21,10 @@ private:
 public:
     // Constructor
     Album(string albumTitle, string albumReleaseDate) {
-        this->title = albumTitle;
-        this->releaseDate = albumReleaseDate;
-        this->sales = 0.0;
-        this->status = "In Production";
+        setTitle(albumTitle);
+        setReleaseDate(albumReleaseDate);
+        setSales(0.0);
+        setStatus("In Production");
         totalAlbumsReleased++;
     }
 
@@ -32,30 +32,35 @@ public:
         totalAlbumsReleased--;
     }
 
-    void addTrack(string track) {
-        this->trackList.push_back(track);
+    // Accessors and mutators
+    string getTitle() const { return title; }
+    void setTitle(const string& albumTitle) { title = albumTitle; }
+
+    string getReleaseDate() const { return releaseDate; }
+    void setReleaseDate(const string& albumReleaseDate) { releaseDate = albumReleaseDate; }
+
+    double getSales() const { return sales; }
+    void setSales(double albumSales) { sales = albumSales; }
+
+    string getStatus() const { return status; }
+    void setStatus(const string& albumStatus) { status = albumStatus; }
+
+    void addTrack(const string& track) {
+        trackList.push_back(track);
     }
 
-    void removeTrack(string track) {
-        this->trackList.erase(remove(this->trackList.begin(), this->trackList.end(), track), this->trackList.end());
+    void removeTrack(const string& track) {
+        trackList.erase(remove(trackList.begin(), trackList.end(), track), trackList.end());
     }
 
     void updateSales(double amount) {
-        this->sales += amount;
+        setSales(getSales() + amount);  // Use mutator
     }
 
-    void changeStatus(string newStatus) {
-        this->status = newStatus;
+    void changeStatus(const string& newStatus) {
+        setStatus(newStatus);  // Use mutator
     }
 
-    double getSales() const {
-        return this->sales;
-    }
-
-    string getStatus() const {
-        return this->status;
-    }
-  
     static int getTotalAlbumsReleased(){
         return totalAlbumsReleased;
     }
@@ -71,31 +76,41 @@ protected:
     Contract contractDetails;
     double royaltyRate;
     vector<Album*> albumList;
-  
+
     static double totalRoyaltiesAccumulated;
 
 public:
-    Artist(string artistName, string artistGenre, Contract contract, double rate) {
-        this->name = artistName;
-        this->genre = artistGenre;
-        this->contractDetails = contract;
-        this->royaltyRate = rate;
+    Artist(const string& artistName, const string& artistGenre, Contract contract, double rate) {
+        setName(artistName);
+        setGenre(artistGenre);
+        signContract(contract);
+        setRoyaltyRate(rate);
     }
 
     ~Artist(){} //destructor
 
-    void signContract(Contract newContract) {
-        this->contractDetails = newContract;
+    // Accessors and mutators
+    string getName() const { return name; }
+    void setName(const string& artistName) { name = artistName; }
+
+    string getGenre() const { return genre; }
+    void setGenre(const string& artistGenre) { genre = artistGenre; }
+
+    double getRoyaltyRate() const { return royaltyRate; }
+    void setRoyaltyRate(double rate) { royaltyRate = rate; }
+
+    void signContract(const Contract& newContract) {
+        contractDetails = newContract;
     }
 
     void releaseAlbum(Album* album) {
-        this->albumList.push_back(album);
+        albumList.push_back(album);
     }
 
     double calculateRoyalties() const {
         double totalRoyalties = 0.0;
-        for (const Album* album : this->albumList) {
-            totalRoyalties += album->getSales() * this->royaltyRate;
+        for (const Album* album : albumList) {
+            totalRoyalties += album->getSales() * getRoyaltyRate();  // Use accessor
         }
         return totalRoyalties;
     }
@@ -103,14 +118,6 @@ public:
     void accumulateRoyalties(){
         double artistRoyalties = calculateRoyalties();
         totalRoyaltiesAccumulated += artistRoyalties;
-    }
-
-    string getName() const {
-        return this->name;
-    }
-
-    string getGenre() const {
-        return this->genre;
     }
 
     static double getTotalRoyaltiesAccumulated(){
