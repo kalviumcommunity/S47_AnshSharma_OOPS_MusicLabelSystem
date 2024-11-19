@@ -1,16 +1,28 @@
-#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
-class Contract {
-    // Dummy Contract class for demonstration purposes
+// Abstract Base Class
+class Entity {
+protected:
+    string name;
+
+public:
+    Entity(const string& entityName) : name(entityName) {}
+    virtual ~Entity() {}
+
+    // Pure virtual function for displaying information
+    virtual void displayInfo() const = 0;
+
+    string getName() const { return name; }
+    void setName(const string& entityName) { name = entityName; }
 };
 
-class Album {
+// Derived Class from Entity: Album
+class Album : public Entity {
 private:
-    string title;
     string releaseDate;
     vector<string> trackList;
     double sales;
@@ -19,174 +31,146 @@ private:
     static int totalAlbumsReleased;
 
 public:
-    // Constructor
-    Album(string albumTitle, string albumReleaseDate) {
-        setTitle(albumTitle);
-        setReleaseDate(albumReleaseDate);
-        setSales(0.0);
-        setStatus("In Production");
+    Album(const string& albumTitle, const string& albumReleaseDate)
+        : Entity(albumTitle), releaseDate(albumReleaseDate), sales(0.0), status("In Production") {
         totalAlbumsReleased++;
     }
 
-    ~Album(){
-        totalAlbumsReleased--;
-    }
+    ~Album() { totalAlbumsReleased--; }
 
-    // Accessors and mutators
-    string getTitle() const { return title; }
-    void setTitle(const string& albumTitle) { title = albumTitle; }
-
-    string getReleaseDate() const { return releaseDate; }
-    void setReleaseDate(const string& albumReleaseDate) { releaseDate = albumReleaseDate; }
-
-    double getSales() const { return sales; }
-    void setSales(double albumSales) { sales = albumSales; }
-
-    string getStatus() const { return status; }
-    void setStatus(const string& albumStatus) { status = albumStatus; }
-
-    void addTrack(const string& track) {
-        trackList.push_back(track);
-    }
-
+    void addTrack(const string& track) { trackList.push_back(track); }
     void removeTrack(const string& track) {
         trackList.erase(remove(trackList.begin(), trackList.end(), track), trackList.end());
     }
 
-    void updateSales(double amount) {
-        setSales(getSales() + amount);  // Use mutator
-    }
+    void updateSales(double amount) { sales += amount; }
+    void changeStatus(const string& newStatus) { status = newStatus; }
 
-    void changeStatus(const string& newStatus) {
-        setStatus(newStatus);  // Use mutator
-    }
+    double getSales() const { return sales; }
 
-    static int getTotalAlbumsReleased(){
-        return totalAlbumsReleased;
-    }
+    static int getTotalAlbumsReleased() { return totalAlbumsReleased; }
 
+    // Overriding virtual function
+    void displayInfo() const override {
+        cout << "Album: " << name << "\nRelease Date: " << releaseDate << "\nStatus: " << status << "\nSales: $" << sales << endl;
+    }
 };
 
 int Album::totalAlbumsReleased = 0;
 
-class Artist {
+// Derived Class from Entity: Artist
+class Artist : public Entity {
 protected:
-    string name;
     string genre;
-    Contract contractDetails;
     double royaltyRate;
     vector<Album*> albumList;
 
     static double totalRoyaltiesAccumulated;
 
 public:
-    Artist(const string& artistName, const string& artistGenre, Contract contract, double rate) {
-        setName(artistName);
-        setGenre(artistGenre);
-        signContract(contract);
-        setRoyaltyRate(rate);
-    }
+    Artist(const string& artistName, const string& artistGenre, double rate)
+        : Entity(artistName), genre(artistGenre), royaltyRate(rate) {}
 
-    ~Artist(){} //destructor
+    virtual ~Artist() {}
 
-    // Accessors and mutators
-    string getName() const { return name; }
-    void setName(const string& artistName) { name = artistName; }
-
-    string getGenre() const { return genre; }
-    void setGenre(const string& artistGenre) { genre = artistGenre; }
-
-    double getRoyaltyRate() const { return royaltyRate; }
-    void setRoyaltyRate(double rate) { royaltyRate = rate; }
-
-    void signContract(const Contract& newContract) {
-        contractDetails = newContract;
-    }
-
-    void releaseAlbum(Album* album) {
-        albumList.push_back(album);
-    }
+    void releaseAlbum(Album* album) { albumList.push_back(album); }
 
     double calculateRoyalties() const {
         double totalRoyalties = 0.0;
         for (const Album* album : albumList) {
-            totalRoyalties += album->getSales() * getRoyaltyRate();  // Use accessor
+            totalRoyalties += album->getSales() * royaltyRate;
         }
         return totalRoyalties;
     }
 
-    void accumulateRoyalties(){
+    void accumulateRoyalties() {
         double artistRoyalties = calculateRoyalties();
         totalRoyaltiesAccumulated += artistRoyalties;
     }
 
-    static double getTotalRoyaltiesAccumulated(){
-        return totalRoyaltiesAccumulated;
+    static double getTotalRoyaltiesAccumulated() { return totalRoyaltiesAccumulated; }
+
+    // Overriding virtual function
+    void displayInfo() const override {
+        cout << "Artist: " << name << "\nGenre: " << genre << "\nRoyalty Rate: " << royaltyRate << endl;
+        cout << "Albums Released:\n";
+        for (const Album* album : albumList) {
+            cout << "  - " << album->getName() << endl;
+        }
     }
 };
 
 double Artist::totalRoyaltiesAccumulated = 0.0;
 
+// Derived Class from Artist: SoloArtist
+class SoloArtist : public Artist {
+public:
+    SoloArtist(const string& artistName, const string& artistGenre, double rate)
+        : Artist(artistName, artistGenre, rate) {}
+
+    void displayInfo() const override {
+        cout << "Solo Artist: " << name << "\nGenre: " << genre << "\nRoyalty Rate: " << royaltyRate << endl;
+        cout << "Albums:\n";
+        for (const Album* album : albumList) {
+            cout << "  - " << album->getName() << endl;
+        }
+    }
+};
+
+// Derived Class from Artist: Band
+class Band : public Artist {
+private:
+    int memberCount;
+
+public:
+    Band(const string& bandName, const string& bandGenre, double rate, int members)
+        : Artist(bandName, bandGenre, rate), memberCount(members) {}
+
+    void displayInfo() const override {
+        cout << "Band: " << name << "\nGenre: " << genre << "\nMembers: " << memberCount << "\nRoyalty Rate: " << royaltyRate << endl;
+        cout << "Albums:\n";
+        for (const Album* album : albumList) {
+            cout << "  - " << album->getName() << endl;
+        }
+    }
+};
+
 int main() {
-    Contract* contract = new Contract();
+    // Create albums
+    Album* album1 = new Album("Rocking the World", "2024-09-01");
+    Album* album2 = new Album("Pop Sensation", "2024-10-15");
 
-    Artist* artists[2] = {
-        new Artist("John Doe", "Rock", *contract, 0.1),
-        new Artist("Jane Smith", "Pop", *contract, 0.15)
-    };
+    album1->addTrack("Track 1");
+    album1->updateSales(5000);
+    album1->changeStatus("Released");
 
-    Album* johnAlbums[2] = {
-        new Album("Rocking the World", "2024-09-01"),
-        new Album("The Next Hit", "2024-12-01")
-    };
-    johnAlbums[0]->addTrack("Track 1");
-    johnAlbums[0]->addTrack("Track 2");
-    johnAlbums[0]->updateSales(5000);
-    johnAlbums[0]->changeStatus("Released");
+    album2->addTrack("Track 2");
+    album2->updateSales(8000);
+    album2->changeStatus("Released");
 
-    johnAlbums[1]->addTrack("Track A");
-    johnAlbums[1]->addTrack("Track B");
-    johnAlbums[1]->updateSales(3000);
-    johnAlbums[1]->changeStatus("Released");
+    // Create artists
+    SoloArtist* artist1 = new SoloArtist("John Doe", "Rock", 0.1);
+    Band* artist2 = new Band("The Pop Stars", "Pop", 0.15, 5);
 
-    Album* janeAlbums[2] = {
-        new Album("Pop Sensation", "2024-10-15"),
-        new Album("Hits Forever", "2024-11-20")
-    };
-    janeAlbums[0]->addTrack("Pop Track 1");
-    janeAlbums[0]->addTrack("Pop Track 2");
-    janeAlbums[0]->updateSales(8000);
-    janeAlbums[0]->changeStatus("Released");
+    // Release albums
+    artist1->releaseAlbum(album1);
+    artist2->releaseAlbum(album2);
 
-    janeAlbums[1]->addTrack("Hit Track A");
-    janeAlbums[1]->addTrack("Hit Track B");
-    janeAlbums[1]->updateSales(6000);
-    janeAlbums[1]->changeStatus("Released");
+    // Display information
+    artist1->displayInfo();
+    cout << "Royalties: $" << artist1->calculateRoyalties() << endl;
 
-    for (int i = 0; i < 2; ++i) {
-        artists[0]->releaseAlbum(johnAlbums[i]);
-        artists[1]->releaseAlbum(janeAlbums[i]);
-    }
-
-    for (int i = 0; i < 2; ++i) {
-        artists[i]->accumulateRoyalties();
-        cout << "Artist: " << artists[i]->getName() << endl;
-        cout << "Genre: " << artists[i]->getGenre() << endl;
-        cout << "Total Royalties: $" << artists[i]->calculateRoyalties() << endl;
-        cout << "----------------------------" << endl;
-    }
+    artist2->displayInfo();
+    cout << "Royalties: $" << artist2->calculateRoyalties() << endl;
 
     cout << "Total Albums Released: " << Album::getTotalAlbumsReleased() << endl;
-    cout << "Total Royalties Accumulated by All Artists: $" << Artist::getTotalRoyaltiesAccumulated() << endl;
+    cout << "Total Royalties Accumulated: $" << Artist::getTotalRoyaltiesAccumulated() << endl;
 
-    // Cleanup dynamic memory
-    for (int i = 0; i < 2; ++i) {
-        delete artists[i];
-        delete johnAlbums[i];
-        delete janeAlbums[i];
-    }
-
-    delete contract;
+    // Clean up memory
+    delete album1;
+    delete album2;
+    delete artist1;
+    delete artist2;
 
     return 0;
 }
